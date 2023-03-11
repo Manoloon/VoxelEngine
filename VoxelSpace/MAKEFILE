@@ -1,0 +1,4 @@
+build:
+	gcc *.c 'sdl2-config --libs --cflags' -IGLEW - framework OpenGL -lpthread -o voxelEngine
+run:
+	./voxelEngine
