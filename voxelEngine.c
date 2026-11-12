@@ -38,6 +38,10 @@ void input(void)
 		Camera.x++;
 	if(keystate(KEY_LEFT))
 		Camera.x--;
+	if(keystate(KEY_Q))
+		Camera.height++;
+	if(keystate(KEY_A))
+		Camera.height--;
 }
 
 int main(int argc, char* args[])
@@ -100,7 +104,8 @@ int main(int argc, char* args[])
 				rx += deltaX;
 				ry += deltaY;
 				// find the offset to fetch from the heightmap the values
-				int MapOffset = ((1024 * (int) (ry)) +(int) (rx));
+				// bitwise clamping
+				int MapOffset = ((1024 * ((int)(ry) & 1023)) + ((int)(rx) & 1023));
 
 				int HeightOnScreenProjected = (int)((Camera.height - HeightMap[MapOffset]) / z * SCALE_FACTOR);
 				if(HeightOnScreenProjected < 0)
