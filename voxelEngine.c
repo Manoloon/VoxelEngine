@@ -7,6 +7,7 @@
 
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 200
+#define SCALE_FACTOR  100.0
 #define ARRAY_LENGTH(x) (sizeof(x)/sizeof(x[0]))
 
 uint8_t* ColorMap = NULL;
@@ -16,14 +17,28 @@ typedef struct
 	float x;
 	float y;
 	float Dof;
+	float height;
 }camera_t;
 
 camera_t Camera = 
 {
 	.x = 512,
 	.y = 512,
-	.Dof = 400
+	.Dof = 400,
+	.height = 150.0
 };
+
+void input(void)
+{
+	if(keystate(KEY_UP))
+		Camera.y++;
+	if(keystate(KEY_DOWN))
+		Camera.y--;
+	if(keystate(KEY_RIGHT))
+		Camera.x++;
+	if(keystate(KEY_LEFT))
+		Camera.x--;
+}
 
 int main(int argc, char* args[])
 {
@@ -60,14 +75,14 @@ int main(int argc, char* args[])
 	{
 		waitvbl();
 		clearscreen();
-
+		input();
 		//// Voxel engine algorithm 
 		// View camera
 		float plx = -Camera.Dof;
-		float ply = Camera.Dof;
+		float ply = +Camera.Dof;
 		
-		float prx = Camera.Dof;
-		float pry = Camera.Dof;
+		float prx = +Camera.Dof;
+		float pry = +Camera.Dof;
 
 		for(int i = 0; i < SCREEN_WIDTH;i++)
 		{
@@ -85,8 +100,9 @@ int main(int argc, char* args[])
 				rx += deltaX;
 				ry += deltaY;
 				// find the offset to fetch from the heightmap the values
-				int MapOffset = ((1024 * (int) ry) +(int) rx);
-				int HeightOnScreenProjected = HeightMap[MapOffset];
+				int MapOffset = ((1024 * (int) (ry)) +(int) (rx));
+
+				int HeightOnScreenProjected = (int)((Camera.height - HeightMap[MapOffset]) / z * SCALE_FACTOR);
 				if(HeightOnScreenProjected < 0)
 				{
 					HeightOnScreenProjected = 0;
@@ -98,7 +114,7 @@ int main(int argc, char* args[])
 				// remember that y grows downward
 				if(HeightOnScreenProjected < MaxHeight)
 				{
-					for(int y = HeightOnScreenProjected; y < MaxHeight;y++)
+					for(int y = HeightOnScreenProjected; y < MaxHeight; y++)
 					{
 						FrameBuffer[(SCREEN_WIDTH * y)+ i] = (uint8_t) ColorMap[MapOffset];
 					}
@@ -107,8 +123,6 @@ int main(int argc, char* args[])
 			}
 		}
 		////////// end of Voxel engine algo
-
-		// input();
 		// Update();
 		// Render();
 		
