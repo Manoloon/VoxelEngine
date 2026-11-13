@@ -41,12 +41,14 @@ void input(void)
 	{
 		Camera.x += cos(Camera.yaw);
 		Camera.y += sin(Camera.yaw);
-		Camera.pitch -= 001.5;
+		if(Camera.pitch > -30.0)
+			Camera.pitch -= 001.5;
 	}		
 	if(keystate(KEY_DOWN))
 		{
 			Camera.x -= cos(Camera.yaw);
 			Camera.y -= sin(Camera.yaw);
+			if(Camera.pitch < 100)
 			Camera.pitch +=001.5;
 		}
 	if(keystate(KEY_RIGHT))
@@ -80,13 +82,13 @@ int main(int argc, char* args[])
 	int	MapHeight;
 	int PalCount;
 
-	ColorMap = loadgif("maps/gif/map0.color.gif",&MapWidth, &MapHeight, &PalCount, Palette);
+	ColorMap = loadgif("maps/gif/map6.color.gif",&MapWidth, &MapHeight, &PalCount, Palette);
 	if(!ColorMap)
 	{
 		fprintf(stderr,"Failed to load Colormap file");
 		return -1;
 	}
-	HeightMap = loadgif("maps/gif/map0.height.gif",&MapWidth,&MapHeight,NULL,NULL);
+	HeightMap = loadgif("maps/gif/map6.height.gif",&MapWidth,&MapHeight,NULL,NULL);
 	if(!HeightMap)
 	{
 		fprintf(stderr,"Failed to load Heightmap file");
